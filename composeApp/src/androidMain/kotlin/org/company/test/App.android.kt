@@ -14,13 +14,22 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.company.test.core.network.ApiClient
 import org.company.test.data.datasource.NetWorkDataSourceImpl
+import java.lang.Exception
+import java.net.UnknownHostException
 
 class AppActivity : ComponentActivity() {
     @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContent { App() }
+        try {
+            setContent {
+                App()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Log.e("error", e.message ?: "")
+        }
     }
 }
 

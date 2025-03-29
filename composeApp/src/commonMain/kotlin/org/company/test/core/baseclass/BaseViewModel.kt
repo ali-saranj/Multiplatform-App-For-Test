@@ -1,49 +1,44 @@
 package org.company.test.core.baseclass
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
-abstract class BaseViewModel<State : Reducer.ViewState, Event : Reducer.ViewEvent, Effect : Reducer.ViewEffect>(
-    initialState: State,
-    private val reducer: Reducer<State, Event, Effect>
-) : ViewModel() {
-    private val _state: MutableStateFlow<State> = MutableStateFlow(initialState)
-    val state: StateFlow<State>
-        get() = _state.asStateFlow()
+abstract class BaseViewModel<
+        State : Reducer.ViewState,
+        Event : Reducer.ViewEvent,
+        Effect : Reducer.ViewEffect
+        > : ViewModel(), Reducer<State, Event, Effect> {
 
-    private val _event: MutableSharedFlow<Event> = MutableSharedFlow()
-    val event: SharedFlow<Event>
-        get() = _event.asSharedFlow()
+    // StateFlow for current UI state
+    private val _state: MutableStateFlow<State> by lazy { MutableStateFlow(initialState()) }
+    val state: StateFlow<State> = _state.asStateFlow()
 
-    private val _effects = Channel<Effect>(capacity = Channel.CONFLATED)
-    val effect = _effects.receiveAsFlow()
+    // Channel for one-time effects (e.g. toast, nav)
+    private val _effect: Channel<Effect> = Channel(Channel.BUFFERED)
+    val effect: Flow<Effect> = _effect.receiveAsFlow()
 
-
-    fun sendEffect(effect: Effect) {
-        _effects.trySend(effect)
-    }
-
+    // Entry point for events
     fun sendEvent(event: Event) {
-        val (newState, _) = reducer.reduce(_state.value, event)
-
-        _state.tryEmit(newState)
-
+        viewModelScope.launch {
+            handleEvent(event)
+        }
     }
 
-    fun sendEventForEffect(event: Event) {
-        val (newState, effect) = reducer.reduce(_state.value, event)
+    protected abstract fun initialState(): State
+    protected abstract suspend fun handleEvent(event: Event)
 
-        _state.tryEmit(newState)
+    // Update UI state
+    protected fun setState(reducer: State.() -> State) {
+        _state.value = _state.value.reducer()
+    }
 
-        effect?.let {
-            sendEffect(it)
+    // Send one-time UI effect
+    protected fun sendEffect(builder: () -> Effect) {
+        viewModelScope.launch {
+            _effect.send(builder())
         }
     }
 }
