@@ -5,7 +5,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Categoryvideo(
+data class CategoryVideo(
     @SerialName("autoplay")
     val autoplay: Boolean,
     @SerialName("big_poster")

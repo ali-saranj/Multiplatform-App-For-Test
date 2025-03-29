@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class CategoryVideosResponse(
     @SerialName("categoryvideos")
-    val categoryvideos: List<Categoryvideo>,
+    val categoryvideos: List<CategoryVideo>,
     @SerialName("ui")
     val ui: Ui
 )
