@@ -7,9 +7,4 @@ import org.company.test.di.viewModelModule
 import org.koin.core.context.startKoin
 import platform.UIKit.UIViewController
 
-fun MainViewController(): UIViewController {
-    startKoin {
-        modules(netWorkModule, repositoryModule, useCaseModule, viewModelModule)
-    }
-    return ComposeUIViewController { App() }
-}
+fun MainViewController(): UIViewController = ComposeUIViewController { App() }

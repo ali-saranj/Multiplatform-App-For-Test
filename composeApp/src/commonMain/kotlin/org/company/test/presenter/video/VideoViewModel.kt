@@ -1,5 +1,7 @@
 package org.company.test.presenter.video
 
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -8,6 +10,7 @@ import org.company.test.core.baseclass.BaseViewModel
 import org.company.test.core.baseclass.Resource
 import org.company.test.domein.home.model.Video
 import org.company.test.domein.home.usecase.GetVideoUseCase
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 class VideoViewModel(val getVideoUseCase: GetVideoUseCase) :
     BaseViewModel<VideoScreenState, VideoScreenEvent, VideoScreenEffect>() {
@@ -39,4 +42,18 @@ class VideoViewModel(val getVideoUseCase: GetVideoUseCase) :
         }
     }
 
+}
+
+
+@Composable
+fun test (
+    modifier: Modifier = Modifier
+) {
+
+}
+
+@Preview
+@Composable
+private fun Preview() {
+    test()
 }

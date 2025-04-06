@@ -30,6 +30,7 @@ import kotlinx.coroutines.launch
 import org.company.test.core.network.ApiClient
 import org.company.test.core.network.toResult
 import org.company.test.data.models.CategoryVideosResponse
+import org.company.test.presenter.video.components.CardVideo
 import org.koin.compose.viewmodel.koinViewModel
 
 
@@ -74,10 +75,10 @@ fun VideoScreen(
         }
     }
 
-    Box(modifier.fillMaxSize().padding(8.dp)) {
+    Box(modifier.fillMaxSize()) {
         LazyColumn {
             items(state.value.videos) {
-                Text(text = it.title)
+                CardVideo(modifier = Modifier.padding(8.dp), video = it)
             }
         }
     }
